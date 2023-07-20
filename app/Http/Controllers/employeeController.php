@@ -34,8 +34,8 @@ class employeeController extends Controller
         $columnSortOrder     =         $orderArray[0]['dir']; // This will get us order direction(ASC/DESC)
         $searchValue         =         $searchArray['value']; // This is search value 
 
-        $total = employee::all()->count();
         $data = employee::query();
+        $total = $data->count();
         if ($searchValue) {
             $data = $data->where('name', 'like', "%" . $searchValue . "%");
             $data = $data->orWhere('mobile', 'like', "%" . $searchValue . "%");
