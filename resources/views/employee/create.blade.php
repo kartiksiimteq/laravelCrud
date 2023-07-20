@@ -27,6 +27,16 @@
                     @endif
                 </div>
                 <div class="mb-3">
+                    <label for="department" class="form-label">Department</label>
+                    <select name="department" class="form-select" required>
+                        <option value="">Select Department</option>
+                        @foreach ($departments as $dp)
+                            <option value={{ $dp->id }}>{{ Str::upper($dp->name ) }}</option>
+                        @endforeach
+
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="formFileSm" class="form-label">Image</label>
                     <input name="image" multiple value="{{ old('image') }}" class="form-control form-control-sm"
                         id="formFileSm" type="file">
