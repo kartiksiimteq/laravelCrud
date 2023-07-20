@@ -15,7 +15,7 @@
                         <input type="checkbox" name="checkBoxGloble" data-isOn="false" id="checkBoxGloble"
                             onclick="checkBoxGlobleClick()">
                     </th>
-                    <th scope="col">Sr</th>
+                    {{-- <th scope="col">Sr</th> --}}
                     <th scope="col">id</th>
                     <th scope="col">Name</th>
                     <th scope="col">dept</th>
@@ -25,34 +25,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($employees as $employee)
-                    <tr>
-                        <th scope="row">
-                            <input type="checkbox" onchange="innerCheckboxChange()" name="checkBox[]">
-                        </th>
-                        <th scope="row">{{ $loop->index + 1 }}</th>
-                        <td>{{ $employee->id }}</td>
-                        <td>{{ $employee->name }}</td>
-                        <td>{{ $employee->getDepartment->name }}</td>
-                        <td>{{ $employee->mobile }}</td>
-                        <td> <img src="/image/{{ $employee->image!=""?$employee->image:"comun.png" }}" class="img-thumbnail" width="40" height="40"
-                                alt="">
-                        </td>
-                        <td>
-                            <button type="button" onclick="fetchData({{ $employee->id }})" class="btn btn-sm btn-info"
-                                data-bs-toggle="modal" data-bs-target="#exampleModal" id="editBtn">
-                                Edit </button>
-                            <a href="/delete/{{ $employee->id }}">
-                                <button type="button" class="btn btn-sm btn-danger">
-                                    Delete
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                @endforeach
+
             </tbody>
         </table>
-        {{ $employees->links() }}
 
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -93,8 +68,7 @@
                                     <input type="text" name="newDepartmentName" class="form-control" id="mobile">
 
                                     <label for="newDepartmentAddress" class="form-label">New Department Address</label>
-                                    <input type="text" name="newDepartmentAddress" class="form-control"
-                                        id="mobile">
+                                    <input type="text" name="newDepartmentAddress" class="form-control" id="mobile">
 
                                 </div>
 
@@ -118,7 +92,70 @@
 
 @section('script')
     <script>
-        // $(document).ready(function() {
+        $(document).ready(function() {
+            $('#main_table').DataTable({
+                processing: true,
+                serverSide: true,
+                order: [
+                    [1, "asc"]
+                ],
+                "lengthMenu": [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, "All"]
+                ],
+                ajax: "{{ url('ajaxfetch') }}",
+                columns: [{
+                        data: null,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return '<input type="checkbox">';
+                        }
+                    },
+                    {
+                        data: 'id'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'department_id'
+                    },
+                    {
+                        data: 'mobile'
+                    },
+                    {
+                        data: 'image',
+                        searchable: false,
+                        render: function(data, type, row) {
+                            if (data) {
+                                return '<img src="/image/' + data +
+                                    '" class="img-thumbnail" width="40" height="40" alt="">';
+                            }
+                            return '<img src="/image/comun.png" class="img-thumbnail" width="40" height="40" alt="">';
+                        }
+                    },
+                    {
+                        data: null,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return `
+                    <button type="button" onclick="fetchData(${data.id})" 
+                        class="btn btn-sm btn-info" data-bs-toggle="modal" 
+                        data-bs-target="#exampleModal" id="editBtn">Edit</button>
+                    <a href="/delete/${data.id}">
+                        <button type="button" class="btn btn-sm btn-danger">Delete</button>
+                    </a>
+                `;
+                        }
+                    },
+                ],
+                rowCallback: function(row, data, index) {
+                    // Add a 'data-id' attribute to the row with the ID from the 'id' column
+                    $(row).attr('data-id', data.id);
+                }
+            });
+
+        });
         // $('#editBtn').on('click', fetchData());
         function fetchData(emp_id) {
             let url = '/employee/' + emp_id;
@@ -141,18 +178,18 @@
                 }
             })
         }
-        
+
         function test() {
             if ($('#department').val() == "addNew") {
                 // console.log("dddd");
                 $("#new_department").removeClass('d-none');
             } else {
-                
+
                 $("#new_department").addClass('d-none');
                 console.log("nooo");
             }
         }
-        
+
         function checkBoxGlobleClick() {
             let btn_is_on = ($("#checkBoxGloble").attr("data-isOn"));
             if (btn_is_on == "false") {
@@ -171,10 +208,8 @@
             $("#main_table  [name='checkBox[]']").each(function(i) {
                 $("#main_table  [name='checkBox[]']")[i].checked ? count++ : count;
             })
-            console.log(count);
-            
-            
+            // console.log(count);
         }
         // });
-        </script>
+    </script>
 @endsection

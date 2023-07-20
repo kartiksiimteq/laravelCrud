@@ -16,6 +16,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
         integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous">
     </script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
 </head>
 
 <body>
@@ -48,10 +51,10 @@
         </div>
     </nav>
     @if ($message = Session::get('success'))
-    <div class="alert alert-success" role="alert">
-        <strong>{{ $message }} </strong>
-    </div>
-@endif
+        <div class="alert alert-success" role="alert">
+            <strong>{{ $message }} </strong>
+        </div>
+    @endif
     @yield('main')
     @yield('script')
 </body>
