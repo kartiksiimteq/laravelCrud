@@ -35,7 +35,7 @@
                         <td>{{ $employee->name }}</td>
                         <td>{{ $employee->getDepartment->name }}</td>
                         <td>{{ $employee->mobile }}</td>
-                        <td> <img src="/image/{{ $employee->image }}" class="img-thumbnail" width="40" height="40"
+                        <td> <img src="/image/{{ $employee->image!=""?$employee->image:"comun.png" }}" class="img-thumbnail" width="40" height="40"
                                 alt="">
                         </td>
                         <td>
