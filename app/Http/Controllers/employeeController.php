@@ -12,7 +12,55 @@ class employeeController extends Controller
     public function  index()
     {
         $departments = department::all();
-        return view('employee.index', ['employees' => employee::latest()->paginate(10), 'departments' => $departments]);
+        return view('employee.index', ['departments' => $departments]);
+    }
+    public function  ajaxfetch(Request $request)
+    {
+        $draw                 =         $request->get('draw'); // Internal use
+        $start                 =         $request->get("start"); // where to start next records for pagination
+        $rowPerPage         =         $request->get("length"); // How many recods needed per page for pagination
+
+        $orderArray        =         $request->get('order');
+        $columnNameArray     =         $request->get('columns'); // It will give us columns array
+
+        $searchArray         =         $request->get('search');
+        $columnIndex         =         $orderArray[0]['column'];  // This will let us know,
+        // which column index should be sorted 
+        // 0 = id, 1 = name, 2 = email , 3 = created_at
+
+        $columnName         =         $columnNameArray[$columnIndex]['data']; // Here we will get column name, 
+        // Base on the index we get
+
+        $columnSortOrder     =         $orderArray[0]['dir']; // This will get us order direction(ASC/DESC)
+        $searchValue         =         $searchArray['value']; // This is search value 
+
+        $total = employee::all()->count();
+        $data = employee::query();
+        if ($searchValue) {
+            $data = $data->where('name', 'like', "%" . $searchValue . "%");
+            $data = $data->orWhere('mobile', 'like', "%" . $searchValue . "%");
+        }
+        if ($columnName) {
+            $data = $data->orderBy($columnName, $columnSortOrder);
+        }
+
+        $filterDataCount = $data->count();
+        if ($rowPerPage == -1) {
+            $data = $data->get();
+        } else {
+            $data = $data->skip($start)->take($rowPerPage)->get();
+        }
+
+
+
+        $response = array(
+            "draw" => intval($draw),
+            "recordsTotal" => $total, // Set the total number of records
+            "recordsFiltered" => $filterDataCount,
+            "data" => $data,
+        );
+
+        return response()->json($response, 200);
     }
     public function  delete(Request $request)
     {

@@ -11,4 +11,5 @@ Route::post('/create/store', [employeeController::class, 'createStore'])->name('
 Route::get('delete/{id}', [employeeController::class, 'delete'])->name('employe.delete');
 Route::get('/employee/{id}', [employeeController::class, 'fetchOne'])->name('employe.fetchone');
 Route::post('/update', [employeeController::class, 'update'])->name('employe.update');
+Route::get('/ajaxfetch', [employeeController::class, 'ajaxFetch'])->name('employe.ajaxfetch');
 // Route::delete('Up/{id}', [employeeController::class, 'createStore'])->name('employe.createStore');
