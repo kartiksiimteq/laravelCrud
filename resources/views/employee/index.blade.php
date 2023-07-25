@@ -100,15 +100,15 @@
                     [1, "asc"]
                 ],
                 "lengthMenu": [
-                    [10, 25, 50, -1],
-                    [10, 25, 50, "All"]
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "All"]
                 ],
                 ajax: "{{ url('ajaxfetch') }}",
                 columns: [{
                         data: null,
                         searchable: false,
                         render: function(data, type, row) {
-                            return '<input type="checkbox">';
+                            return '<input type="checkbox" name="innerChckbox[]" value='+data.id+'>';
                         }
                     },
                     {
