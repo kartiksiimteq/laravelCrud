@@ -4,18 +4,19 @@
         <div class="d-flex justify-content-between">
             <h1 class="display-6">Employee</h1>
             <div class="display-6">
-                <button id="activeBtn" class="btn btn-success btn-sm">Active</button>
-                <button id="inActiveBtn" class="btn btn-danger btn-sm">InActive</button>
+{{--                <button id="activeBtn" class="btn btn-success btn-sm">Active</button>--}}
+{{--                <button id="inActiveBtn" class="btn btn-danger btn-sm">InActive</button>--}}
+
+                <a href="{{route("employe.pdfDownload")}}" id="pdf" class="btn btn-info btn-sm">View Pdf</a>
             </div>
         </div>
-        <table class="table table-bordered" id="main_table">
+        <table class="table border" id="main_table">
             <thead>
                 <tr>
                     <th scope="col">
                         <input type="checkbox" name="checkBoxGloble" data-isOn="false" id="checkBoxGloble"
                             onclick="checkBoxGlobleClick()">
                     </th>
-                    {{-- <th scope="col">Sr</th> --}}
                     <th scope="col">id</th>
                     <th scope="col">Name</th>
                     <th scope="col">dept</th>
@@ -100,15 +101,15 @@
                     [1, "asc"]
                 ],
                 "lengthMenu": [
-                    [10, 25, 50, -1],
-                    [10, 25, 50, "All"]
+                    [10, 25, 50, 100, -1],
+                    [10, 25, 50, 100, "All"]
                 ],
                 ajax: "{{ url('ajaxfetch') }}",
                 columns: [{
                         data: null,
                         searchable: false,
                         render: function(data, type, row) {
-                            return '<input type="checkbox">';
+                            return '<input type="checkbox" name="innerChckbox[]" value='+data.id+'>';
                         }
                     },
                     {
@@ -139,8 +140,8 @@
                         searchable: false,
                         render: function(data, type, row) {
                             return `
-                    <button type="button" onclick="fetchData(${data.id})" 
-                        class="btn btn-sm btn-info" data-bs-toggle="modal" 
+                    <button type="button" onclick="fetchData(${data.id})"
+                        class="btn btn-sm btn-info" data-bs-toggle="modal"
                         data-bs-target="#exampleModal" id="editBtn">Edit</button>
                     <a href="/delete/${data.id}">
                         <button type="button" class="btn btn-sm btn-danger">Delete</button>

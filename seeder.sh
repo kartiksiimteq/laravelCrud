@@ -12,5 +12,5 @@ fi
 # Loop 'n' times and execute the 'php artisan db:seed' command
 for ((i=1; i<=$n; i++))
 do
-    php artisan db:seed
+  nice -n -10 php artisan db:seed
 done
