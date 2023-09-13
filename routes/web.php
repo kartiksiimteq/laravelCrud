@@ -15,5 +15,6 @@ Route::get('/ajaxfetch', [employeeController::class, 'ajaxFetch'])->name('employ
 Route::get('/pdfDownload', [employeeController::class, 'pdfDownload'])->name('employe.pdfDownload');
 Route::get('/test', [employeeController::class, 'test'])->name('employe.test');
 Route::get('/testRequest', [employeeController::class, 'testRequest'])->name('employe.Request');
+Route::get('/opensearch', [opensearchController::class, 'index'])->name('opensearch.index');
 
 // Route::delete('Up/{id}', [employeeController::class, 'createStore'])->name('employe.createStore');
