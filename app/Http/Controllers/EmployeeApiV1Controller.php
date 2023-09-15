@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 
 class EmployeeApiV1Controller extends Controller
 {
@@ -32,12 +33,26 @@ class EmployeeApiV1Controller extends Controller
             $response = ['status' => 422, 'success' => true, 'message' => "User Not Found"];
             $status   = 422;
         } else {
-            $response = ['status' => 200, 'success' => true, 'message' => "User Found", 'per_page' => $per_page, 'page_number' => $page_number, 'Data' => $employee];
+            foreach ($employee as $emp) {
+                $employees[] = [
+                    "data" => $emp, "link" => self::getLinks($emp)
+                ];
+            }
+            $response = ['status' => 200, 'success' => true, 'message' => "User Found", 'per_page' => $per_page, 'page_number' => $page_number, 'Data' => $employees];
             $status   = 200;
         }
 
         return response()->json($response, $status);
 
+    }
+
+    public function getLinks(Employee $employee): array
+    {
+        return [
+            'self'   => ['Method' => 'get', 'url' => URL::route('employees.show', ['employee' => $employee->id])],
+            'update' => ['Method' => 'put/post', 'url' => URL::route('employees.update', ['employee' => $employee->id])],
+            'delete' => ['Method' => 'delete', 'url' => URL::route('employees.destroy', ['employee' => $employee->id])],
+        ];
     }
 
     /**
@@ -72,7 +87,11 @@ class EmployeeApiV1Controller extends Controller
     {
         $employee = Employee::query()->find($id);
         if ($employee) {
-            $response = ['status' => 200, 'success' => true, 'message' => "User Found", 'data' => $employee];
+            $response = [
+                'status' => 200, 'success' => true, 'message' => "User Found", 'data' => [
+                    "data" => $employee, "link" => self::getLinks($employee)
+                ]
+            ];
             $status   = 200;
 
         } else {
@@ -103,7 +122,9 @@ class EmployeeApiV1Controller extends Controller
             $request = $request->all();
             $data->fill($request);
             $data->save();
-            $response = ['status' => 200, 'success' => true, 'message' => "User Updated", 'data' => $data];
+            $response = ['status' => 200, 'success' => true, 'message' => "User Updated", 'data' => [
+                "data" => $data, "link" => self::getLinks($data)
+            ]];
             $status   = 200;
         }
 
