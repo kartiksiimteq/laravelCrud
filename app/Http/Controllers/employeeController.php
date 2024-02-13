@@ -13,7 +13,7 @@ class employeeController extends Controller
 {
     public function index()
     {
-        $departments = department::all();
+        $departments = department::query()->limit(50)->get();
         return view('employee.index', ['departments' => $departments]);
     }
 
@@ -73,33 +73,35 @@ class employeeController extends Controller
         $orderArray = $request->get('order');
         $columnNameArray = $request->get('columns'); // It will give us columns array
 
-        $searchArray = $request->get('search');
-        $columnIndex = $orderArray[0]['column'];  // This will let us know,
+        $searchArray         =         $request->get('search');
+        $columnIndex         =         $orderArray[0]['column'];  // This will let us know,
         // which column index should be sorted
         // 0 = id, 1 = name, 2 = email , 3 = created_at
 
-        $columnName = $columnNameArray[$columnIndex]['data']; // Here we will get column name,
+        $columnName         =         $columnNameArray[$columnIndex]['data']; // Here we will get column name,
         // Base on the index we get
 
-        $columnSortOrder = $orderArray[0]['dir']; // This will get us order direction(ASC/DESC)
-        $searchValue = $searchArray['value']; // This is search value
+        $columnSortOrder     =         $orderArray[0]['dir']; // This will get us order direction(ASC/DESC)
+        $searchValue         =         $searchArray['value']; // This is search value
 
-        $data = employee::query();
-        $total = $data->count();
+        $total = employee::all()->count();
+        $data = employee::query()->with(['Department']);
         if ($searchValue) {
-            $data = $data->where('name', 'like', "%".$searchValue."%");
-            $data = $data->orWhere('mobile', 'like', "%".$searchValue."%");
+            $data = $data->where('name', 'like', "%" . $searchValue . "%");
+            $data = $data->orWhere('mobile', 'like', "%" . $searchValue . "%")
+                         ->orWhereHas('department', function($query) use ($searchValue) {
+                            $query->where('name', 'like', "%" . $searchValue . "%");
+                        });
         }
         if ($columnName) {
             $data = $data->orderBy($columnName, $columnSortOrder);
         }
 
         $filterDataCount = $data->count();
-        if ($rowPerPage == -1) {
-            $data = $data->get();
-        } else {
-            $data = $data->skip($start)->take($rowPerPage)->get();
+        if ($rowPerPage != -1) {
+            $data = $data->skip($start)->take($rowPerPage);
         }
+        $data = $data->get();
 
 
         $response = array(
@@ -158,25 +160,49 @@ class employeeController extends Controller
 
     public function create()
     {
-        $departments = department::all();
+        $departments = department::query()->limit(5)->get();
         return view('employee.create', ['departments' => $departments]);
     }
 
     public function createStore(Request $request)
     {
         $request->validate([
-            'name' => 'required', 'mobile' => 'required', 'department' => 'required', 'image' => 'required | mimes:jpg,jpeg,png,gif | max:1000',
+            'name' => 'required',
+            'mobile' => 'required',
+            'department' => 'required',
+//            'image' => 'required|mimes:jpg,jpeg,png,gif|max:1000',
         ]);
 
         $employee = new employee();
         $employee->name = $request->name;
         $employee->mobile = $request->mobile;
         $employee->department_id = $request->department;
-        $imageName = time().".".$request->image->extension();
-        $request->image->move(public_path('image'), $imageName);
-        $employee->image = $imageName;
+        if($request->has('image')){
+            $imageName = time() . "." . $request->image->extension();
+            $request->image->move(public_path('image'), $imageName);
+            $employee->image = $imageName;
+        }
         $employee->save();
         return back()->withSuccess('User Created');
+    }
+    public function getDepartments(Request $request)
+    {
+        // Retrieve the search term from the request
+        $searchTerm = $request->get('q');
+
+        // Query to fetch departments based on the search term
+        $departments = Department::query()
+                                 ->select('id', 'name')
+                                 ->where('name', 'like', '%' . $searchTerm . '%')
+                                 ->limit(30)
+                                 ->get()
+                                 ->map(function ($departments) {
+                                     return ['id' => $departments->id, 'name' => $departments->name];
+                                 })
+                                 ->toArray();
+
+        // Return the departments in the specified format
+        return ['items' => $departments,'total_count' => count($departments)];
     }
 
 }

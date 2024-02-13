@@ -119,7 +119,7 @@
                         data: 'name'
                     },
                     {
-                        data: 'department_id'
+                        data: 'department.name',
                     },
                     {
                         data: 'mobile'

@@ -15,7 +15,7 @@ class Employee extends Model
         'image',
         'department_id'
     ];
-    function getDepartment()
+    function Department()
     {
         return $this->hasOne(department::class, 'id', 'department_id');
     }
