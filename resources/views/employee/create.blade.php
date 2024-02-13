@@ -28,12 +28,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="department" class="form-label">Department</label>
-                    <select name="department" class="form-select" required>
+                    <select name="department" id="department" class="department form-select" >
                         <option value="">Select Department</option>
-                        @foreach ($departments as $dp)
-                            <option value={{ $dp->id }}>{{ Str::upper($dp->name ) }}</option>
-                        @endforeach
-
                     </select>
                 </div>
                 <div class="mb-3">
@@ -47,8 +43,5 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
-
-
-
     </div>
 @endsection
